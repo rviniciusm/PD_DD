@@ -3,15 +3,34 @@ class Entity {
     y: number;
     step: number;
     image: p5.Image;
+    alive: boolean; 
+    timeToRessurect: number;
+
                 //paramentros
     constructor(x: number, y: number, step: number, image:p5.Image) {
     this.x = x;
     this.y = y;
     this.step = step;
     this.image = image;
+    this.alive = true;
 } 
+
+   update(): void{
+    if(!this.alive) {
+       this.timeToRessurect --;
+       if (this.timeToRessurect <= 0) {
+          this.alive = true;
+          this.timeToRessurect = 0;
+       }
+    }
+  }
+
+
 //metodos 
     draw(): void {
+       if(!this.alive){
+          return;
+       }
          image(this.image, this.x *this.step, this.y *this.step, this.step, this.step);
 
     }
@@ -70,6 +89,12 @@ function preload() {
 }
 
 function keyPressed() {
+  let fox_x = fox.x;
+  let fox_y = fox.y;
+  let prince_x = prince.x;
+  let prince_y = prince.y;
+
+
     if(keyCode === LEFT_ARROW) {
        fox.x--;
        fox.image = fox2_img;
@@ -90,9 +115,17 @@ function keyPressed() {
     }  else if(keyCode === "S".charCodeAt(0)) {
        prince.y++;
     }
+    if(fox.x == prince.x && fox.y == prince.y) {
+       prince.alive = false
+       prince.timeToRessurect = 4
+       prince.x = 0
+       prince.y = 0
+    }
 }
 
+
 function setup() {
+   frameRate(10)
     let size = 100;
     fox = new Entity(2, 2, size, fox_img);
     prince = new Entity(1, 1, size, prince_img);
@@ -100,7 +133,7 @@ function setup() {
     createCanvas(board.nc * size, board.nc * size);
 }
 
-function animals_walk(){
+function personagens_andando(){
    if(fox.x === board.nc)
       fox.x = 5;
    if(fox.y === board.nl)
@@ -121,14 +154,16 @@ function animals_walk(){
       prince.x = 0;
    if(fox.y === 1)
       fox.y = 3
-      
+          
 }
 
 function draw() {
-    animals_walk();
+    personagens_andando();
     board.draw();
     fox.draw();
     prince.draw();
+    prince.update();
 }
+
 
 
